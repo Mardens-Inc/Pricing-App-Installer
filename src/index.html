@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Pricing App</title>
+
+    <link href="assets/images/icon.png" rel="shortcut icon" type="image/x-icon">
+
+    <link href="assets/css/main.css" rel="stylesheet">
+    <link href="assets/css/inputs.css" rel="stylesheet">
+    <link href="assets/css/nav.css" rel="stylesheet">
+    <link href="assets/css/list.css" rel="stylesheet">
+    <link href="assets/css/scrollbar.css" rel="stylesheet">
+    <link href="assets/css/popups.css" rel="stylesheet">
+
+    <script src="assets/js/jquery-3.7.1.min.js"></script>
+</head>
+<body class="col">
+<nav class="row center vertical">
+    <div class="row" id="hero">
+        <img alt="" src="assets/images/icon.svg">
+        <div class="title col">
+            <h2>Pricing App</h2>
+            <h3>Installer</h3>
+        </div>
+    </div>
+</nav>
+
+<main class="list col">
+    <div id="select-install-location" class="row" style="position: relative">
+        <div class="floating-input fill">
+            <input id="install-location" name="install-location" placeholder="" type="text" value="C:\Program Files\Mardens Inc.\Pricing App" style="color:#ccc;cursor:pointer;" readonly>
+            <label for="install-location">Install Location</label>
+        </div>
+        <button class="primary" style="width: 64px;height: 38px;margin-block: auto;position: absolute;right:5px; top: 50%;transform: translateY(-50%)">
+            <img src="assets/images/folder.svg" alt="..." style="width: 21px;">
+        </button>
+    </div>
+    <toggle id="create-quick-launch-shortcut" value="true">Create Quick Launch Shortcut</toggle>
+    <toggle id="create-desktop-shortcut" value="true">Create Desktop Shortcut</toggle>
+    <toggle id="create-start-menu-shortcut" value="true">Create Start Menu Shortcut</toggle>
+    <toggle id="create-taskbar-shortcut" value="true">Pin to Taskbar</toggle>
+    <toggle id="start-with-windows" value="true">Start with Windows</toggle>
+</main>
+
+<div class="row" id="action-button-row" style="width: 70%;margin-inline:auto;">
+    <button class="primary fill" id="install" type="submit">Install</button>
+    <button id="cancel" style="width: 50%" type="button">Cancel</button>
+</div>
+
+<script src="assets/js/installer.js" type="module"></script>
+
+</body>
+</html>
