@@ -1,0 +1,38 @@
+{
+	"build": {
+		"devPath": "../src",
+		"distDir": "../src",
+		"withGlobalTauri": true
+	},
+	"package": {
+	},
+	"tauri": {
+		"allowlist": {
+			"all": false,
+			"dialog": {
+				"open": true
+			}
+		},
+		"windows": [
+			{
+				"fullscreen": false,
+				"resizable": false,
+				"title": "Pricing App",
+				"width": 750,
+				"height": 518
+			}
+		],
+		"security": {
+			"csp": null
+		},
+		"bundle": {
+			"active": true,
+			"targets": "all",
+			"identifier": "com.mardens.pricing-app-installer",
+			"icon": [
+				"../src/assets/images/icon.png",
+				"../src/assets/images/icon.ico"
+			]
+		}
+	}
+}
