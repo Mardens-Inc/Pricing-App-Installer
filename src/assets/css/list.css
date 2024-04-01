@@ -1,0 +1,11 @@
+.list {
+    display: flex;
+    justify-content: space-between;
+    margin: 1rem auto;
+    width: 90%;
+    min-width: 500px;
+    max-height: calc(100vh - 243px);
+    min-height: 100px;
+    overflow-y: auto;
+    padding-right: 1rem;
+}
