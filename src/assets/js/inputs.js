@@ -1,5 +1,5 @@
 let debounce = 0;
-$(document).on("load", () => {
+$(window).on("load", () => {
     clearTimeout(debounce);
     $(`[toggle-hidden]`).each((_, element) => {
         let target = $(element);
