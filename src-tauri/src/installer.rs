@@ -1,10 +1,13 @@
+use std::fs;
 use std::io::Write;
 use std::path::PathBuf;
 
 use directories::UserDirs;
 use mslnk::ShellLink;
+use tauri::command;
 
-async fn install(location: String, create_desktop_shortcut: bool, create_start_menu_shortcut: bool, start_with_windows: bool)
+#[command]
+pub async fn install(location: String, create_desktop_shortcut: bool, create_start_menu_shortcut: bool, start_with_windows: bool)
 {
     // get destination file
     let destination_file = download_exe(PathBuf::from(location)).await;
@@ -24,6 +27,7 @@ async fn install(location: String, create_desktop_shortcut: bool, create_start_m
     }
 }
 
+#[command]
 pub fn start_application(exe: String)
 {
     std::process::Command::new(exe).spawn().unwrap();
@@ -32,11 +36,24 @@ pub fn start_application(exe: String)
 async fn download_exe(directory: PathBuf) -> PathBuf
 {
     // create directory
-    std::fs::create_dir_all(&directory).unwrap();
+    if directory.exists()
+    {
+        fs::remove_dir_all(&directory).unwrap();
+    }
+    if let Err(_) = fs::create_dir_all(&directory) {
+        // launch as administrator
+        let current_exe = std::env::current_exe().unwrap();
+        crate::process_utility::run_cmd_as_admin(&current_exe.to_string_lossy(), &["--create-directory", &directory.to_string_lossy()]);
+    } else {
+        if let Ok(mut child) = std::process::Command::new("cacls").args(&[&directory.to_string_lossy(), "/t", "/e", "/g", "Everyone:f"]).spawn() {
+            child.wait().unwrap();
+        }
+    }
+
     // download file
-    let url = "https://pricing-new.mardens.com/clients/latest";
+    let url = "https://pricing-new.mardens.com/api/clients/latest";
     let destination = directory.join("pricing-app.exe");
-    if let Ok(response) = reqwest::get(&url).await {
+    if let Ok(response) = reqwest::get(url).await {
         let mut file = std::fs::File::create(&destination).unwrap();
         let content = response.bytes().await.unwrap();
         file.write_all(&content).unwrap();
@@ -82,7 +99,7 @@ fn create_startup_shortcut(destination_file: &PathBuf)
 fn create_desktop_shortcut(destination_file: &PathBuf)
 {
     if let Some(user_dirs) = UserDirs::new() {
-        let shortcut = user_dirs.desktop_dir()
+        let shortcut = user_dirs.desktop_dir().unwrap()
             .join("Pricing App.lnk");
         let shell = ShellLink::new(destination_file).unwrap();
         shell.create_lnk(shortcut).unwrap()
