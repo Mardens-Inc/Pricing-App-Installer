@@ -1,6 +1,6 @@
 :root {
     --scrollbarBG: #C5C5C5;
-    --thumbBG: #6A6A6A;
+    --thumbBG: #515151;
     --scrollbar-width: 5px;
     scrollbar-gutter: stable;
 }
@@ -11,7 +11,8 @@
 }
 
 ::-webkit-scrollbar-track {
-    background: transparent;
+    background: var(--thumbBG);
+    border-radius: 100px;
 }
 
 ::-webkit-scrollbar-thumb {
