@@ -30,7 +30,7 @@
 <main class="list col">
     <div id="select-install-location" class="row" style="position: relative">
         <div class="floating-input fill">
-            <input id="install-location" name="install-location" placeholder="" type="text" value="C:\Program Files\Mardens Inc.\Pricing App" style="color:#ccc;cursor:pointer;" readonly>
+            <input id="install-location" name="install-location" placeholder="" type="text" value="" style="color:#ccc;cursor:pointer;" readonly>
             <label for="install-location">Install Location</label>
         </div>
         <button class="primary" style="width: 64px;height: 38px;margin-block: auto;position: absolute;right:5px; top: 50%;transform: translateY(-50%)">
@@ -44,7 +44,7 @@
 
 <div class="row" id="action-button-row" style="width: 70%;margin-inline:auto;">
     <button class="primary fill" id="install" type="submit">Install</button>
-    <button id="cancel" style="width: 50%" type="button">Cancel</button>
+    <button id="cancel" style="width: 50%" type="button" onclick="window.close()">Cancel</button>
 </div>
 
 <script src="assets/js/installer.js" type="module"></script>
