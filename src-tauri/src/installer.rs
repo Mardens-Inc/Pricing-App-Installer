@@ -31,6 +31,13 @@ pub async fn install(location: String, create_desktop_shortcut: bool, create_sta
 pub fn start_application(exe: String)
 {
     std::process::Command::new(exe).spawn().unwrap();
+    std::process::exit(0);
+}
+
+#[command]
+pub fn exit_application()
+{
+    std::process::exit(0);
 }
 
 async fn download_exe(directory: PathBuf) -> PathBuf
@@ -40,15 +47,7 @@ async fn download_exe(directory: PathBuf) -> PathBuf
     {
         fs::remove_dir_all(&directory).unwrap();
     }
-    if let Err(_) = fs::create_dir_all(&directory) {
-        // launch as administrator
-        let current_exe = std::env::current_exe().unwrap();
-        crate::process_utility::run_cmd_as_admin(&current_exe.to_string_lossy(), &["--create-directory", &directory.to_string_lossy()]);
-    } else {
-        if let Ok(mut child) = std::process::Command::new("cacls").args(&[&directory.to_string_lossy(), "/t", "/e", "/g", "Everyone:f"]).spawn() {
-            child.wait().unwrap();
-        }
-    }
+    if let Err(_) = fs::create_dir_all(&directory) {}
 
     // download file
     let url = "https://pricing-new.mardens.com/api/clients/latest";
@@ -57,25 +56,47 @@ async fn download_exe(directory: PathBuf) -> PathBuf
         let mut file = std::fs::File::create(&destination).unwrap();
         let content = response.bytes().await.unwrap();
         file.write_all(&content).unwrap();
+
+        let url = "https://pricing-new.mardens.com/api/clients/updater";
+        let destination = directory.join("updater.exe");
+        if let Ok(response) = reqwest::get(url).await {
+            let mut file = std::fs::File::create(&destination).unwrap();
+            let content = response.bytes().await.unwrap();
+            file.write_all(&content).unwrap();
+        }
     }
 
     return destination;
 }
 
+#[command]
+pub fn get_default_install_location() -> String
+{
+    if let Some(user_dirs) = UserDirs::new() {
+        return user_dirs.home_dir().join("AppData").join("Local").join("Mardens Inc.").join("Pricing App").to_string_lossy().to_string();
+    }
+    return "".to_string();
+}
+
 fn create_start_menu_shortcut(destination_file: &PathBuf)
 {
     if let Some(user_dirs) = UserDirs::new() {
-        let shortcut = user_dirs.home_dir()
+        // create directory
+        let directory = user_dirs.home_dir()
             .join("AppData")
             .join("Roaming")
             .join("Microsoft")
             .join("Windows")
             .join("Start Menu")
             .join("Programs")
-            .join("Mardens Pricing App")
-            .join("Pricing App.lnk");
-        let shell = ShellLink::new(destination_file).unwrap();
-        shell.create_lnk(shortcut).unwrap()
+            .join("Mardens Inc.");
+        if let Ok(_) = fs::create_dir_all(&directory) {
+            let shortcut = directory.join("Pricing App.lnk");
+            let shell = ShellLink::new(destination_file).unwrap();
+            if shell.create_lnk(shortcut).ok().is_none() {
+                println!("Failed to create start menu shortcut");
+            }
+        }
     }
 }
 
@@ -92,7 +113,9 @@ fn create_startup_shortcut(destination_file: &PathBuf)
             .join("Startup")
             .join("Pricing App.lnk");
         let shell = ShellLink::new(destination_file).unwrap();
-        shell.create_lnk(shortcut).unwrap()
+        if shell.create_lnk(shortcut).ok().is_none() {
+            println!("Failed to create startup shortcut");
+        }
     }
 }
 
@@ -102,6 +125,8 @@ fn create_desktop_shortcut(destination_file: &PathBuf)
         let shortcut = user_dirs.desktop_dir().unwrap()
             .join("Pricing App.lnk");
         let shell = ShellLink::new(destination_file).unwrap();
-        shell.create_lnk(shortcut).unwrap()
+        if shell.create_lnk(shortcut).ok().is_none() {
+            println!("Failed to create desktop shortcut");
+        }
     }
 }
